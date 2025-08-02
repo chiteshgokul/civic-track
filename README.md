@@ -1,304 +1,220 @@
-# civic-track
+# CivicTrack
 
+CivicTrack is a web application designed to enable citizens to report civic issues, file complaints, and track their status.
 
-Welcome to the CivicTrack Backend, a robust Node.js/Express.js application designed to manage civic issue reporting, tracking, and administration. This backend supports a platform where users can report issues (e.g., potholes, lighting issues), citizens can lodge complaints, and administrators can monitor and resolve them. It integrates with a MySQL database and includes features like user authentication, geospatial filtering, and photo uploads.
-Table of Contents
+## Features
 
-Overview
-Features
-Prerequisites
-Setup
-API Endpoints
-Database Schema
-Environment Variables
-Running the Application
-Testing
-Contributing
-License
-Contact
+- **User Authentication:** Register and log in using email and password.
+- **Report Submission:** Authenticated users can submit reports with titles, descriptions, categories, locations (latitude/longitude), and photos.
+- **Complaint Filing:** Users can file complaints linked to departments and citizens.
+- **Report Listing:** View reports within a specified radius, with photo display.
+- **Admin Dashboard:** Admins can update report statuses and view analytics.
+- **Protected Routes:** Restrict access to certain routes for authenticated users or admins.
+- **Responsive Design:** Mobile-friendly UI with Tailwind CSS or custom styles.
+- **Photo Storage:** Photos are stored in MySQL as LONGBLOB with validation for JPEG/PNG/GIF formats and a 5MB size limit.
 
-Overview
-The CivicTrack Backend is built using modern web technologies and follows best practices for security, modularity, and performance. It serves as the server-side component for the CivicTrack platform, handling RESTful API requests and managing data persistence in a MySQL database.
+## Tech Stack
 
-Framework: Express.js
-Database: MySQL
-Authentication: JWT (JSON Web Tokens)
-Dependencies: Managed via package.json
-Version: 1.0.0
+- **Frontend:** React 18, React Router 6, Axios, Tailwind CSS, Context API
+- **Backend:** Node.js, Express, MySQL, JWT, Multer
+- **Database:** MySQL with InnoDB engine
+- **Other:** Winston, bcrypt, express-validator
 
-Features
+## Setup Instructions
 
-User registration and authentication with admin privileges.
-Reporting civic issues with geospatial coordinates and photos.
-Citizen complaint submission linked to departments and officers.
-Status tracking for reports and complaints.
-Administrative tools for flagging reports and viewing analytics.
-Secure API endpoints with input validation and error handling.
-Geospatial querying for nearby issues.
+### 1. Clone the Repository
 
-Prerequisites
-Before setting up the project, ensure you have the following installed:
+```bash
+git clone <repository-url>
+cd CivicTrack
+```
 
-Node.js: v18.x or later (https://nodejs.org/)
-npm: v9.x or later (comes with Node.js)
-MySQL: v8.0 or later (https://www.mysql.com/)
-Git: For version control (https://git-scm.com/)
-AWS SDK: Optional, for S3 photo uploads (configure credentials)
+### 2. Backend Setup
 
-Setup
-Follow these steps to set up the CivicTrack Backend locally:
-
-Clone the Repository:
-git clone https://github.com/your-username/CivicTrack.git
-cd CIVIC AI
-
-
-Install Dependencies:Navigate to the backend directory and install the required packages:
+Navigate to Backend Directory:
+```bash
 cd backend
+```
+
+Install Dependencies:
+```bash
 npm install
+```
 
+Configure Environment Variables:
 
-Configure the Database:
-
-Ensure MySQL is running on your local machine.
-Create the civictrack database:mysql -u your_username -p
-CREATE DATABASE IF NOT EXISTS civictrack;
-EXIT;
-
-
-Apply the database schema:mysql -u your_username -p civictrack < migrations/20250802_init.sql
-
-
-
-
-Create Environment Variables:
-
-Copy the .env.example file (or create .env manually) in the backend directory with the following content:DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=civictrack
-PORT=3000
-JWT_SECRET=your_jwt_secret
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=your_aws_region
-S3_BUCKET=your_s3_bucket
-
-
-Replace placeholders (e.g., your_username, your_password) with your actual values.
-Note: The .env file is ignored by Git for security reasons.
-
-
-Run the Application:See the Running the Application section.
-
-
-API Endpoints
-The backend exposes the following RESTful endpoints:
-Authentication
-
-POST /api/auth/register
-Body: { "username": "string", "email": "string", "password": "string" }
-Response: { "message": "User registered successfully" }
-
-
-POST /api/auth/login
-Body: { "email": "string", "password": "string" }
-Response: { "token": "jwt_token" }
-
-
-
-Reports
-
-POST /api/reports
-Headers: Authorization: Bearer your_jwt_token
-Body: { "title": "string", "description": "string", "categoryId": number, "latitude": number, "longitude": number }
-Response: { "reportId": number, "token": "string|null" }
-
-
-GET /api/reports
-Query: ?latitude=number&longitude=number&radius=number&status=string&categoryId=number
-Response: [{ "reportId": number, "title": "string", ... }]
-
-
-
-Categories
-
-GET /api/categories
-Response: [{ "category_id": number, "name": "string" }]
-
-
-
-Citizens
-
-POST /api/citizens
-Body: { "name": "string", "phone": "string", "email": "string", "address": "string", "aadhar_no": "string" }
-Response: { "citizenId": number }
-
-
-GET /api/citizens
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Response: [{ "citizen_id": number, "name": "string", ... }]
-
-
-
-Departments
-
-POST /api/departments
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Body: { "dept_name": "string", "contact_no": "string" }
-Response: { "deptId": number }
-
-
-GET /api/departments
-Response: [{ "dept_id": number, "dept_name": "string", ... }]
-
-
-
-Officers
-
-POST /api/officers
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Body: { "name": "string", "designation": "string", "phone": "string", "email": "string", "dept_id": number }
-Response: { "officerId": number }
-
-
-GET /api/officers
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Response: [{ "officer_id": number, "name": "string", ... }]
-
-
-
-Complaints
-
-POST /api/complaints
-Body: { "citizen_id": number, "dept_id": number, "description": "string" }
-Response: { "complaintId": number }
-
-
-PUT /api/complaints/:complaintId/status
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Body: { "status": "Pending|In Progress|Resolved" }
-Response: { "message": "Complaint status updated" }
-
-
-GET /api/complaints
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Query: ?status=string&dept_id=number
-Response: [{ "complaint_id": number, "description": "string", ... }]
-
-
-
-Admin
-
-GET /api/admin/flagged
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Response: [{ "report_id": number, "title": "string", "flag_count": number }]
-
-
-PUT /api/admin/users/:userId/ban
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Response: { "message": "User banned" }
-
-
-GET /api/admin/analytics
-Headers: Authorization: Bearer your_jwt_token (admin only)
-Response: { "totalReports": number, "totalComplaints": number, "categoryStats": [...], "deptStats": [...] }
-
-
-
-Database Schema
-The backend uses a MySQL database with the following tables:
-
-users: Stores registered users with authentication details.
-categories: Lists issue categories (e.g., Roads, Lighting).
-reports: Tracks user-submitted issues with geospatial data.
-photos: Stores photo URLs linked to reports.
-status_logs: Logs status changes for reports.
-flags: Records flagged reports for moderation.
-citizens: Stores details of citizens submitting complaints.
-departments: Manages departments handling complaints.
-officers: Tracks officers assigned to departments.
-complaints: Records citizen-submitted complaints.
-
-The schema is defined in migrations/20250802_init.sql and includes indexes (e.g., spatial index on reports.location) for performance.
-Environment Variables
-Configure the following variables in a .env file in the backend directory:
-
-DB_HOST: MySQL host (default: localhost)
-DB_USER: MySQL username
-DB_PASSWORD: MySQL password
-DB_NAME: Database name (default: civictrack)
-PORT: Server port (default: 3000)
-JWT_SECRET: Secret key for JWT (e.g., a random string)
-AWS_ACCESS_KEY_ID: AWS access key for S3 (optional)
-AWS_SECRET_ACCESS_KEY: AWS secret key for S3 (optional)
-AWS_REGION: AWS region for S3 (optional)
-S3_BUCKET: S3 bucket name for photo storage (optional)
-
-Example .env:
+Create a .env file in /backend with the following:
+```env
 DB_HOST=localhost
-DB_USER=your_username
-DB_PASSWORD=your_password
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
 DB_NAME=civictrack
 PORT=3000
 JWT_SECRET=your_jwt_secret
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=your_aws_region
-S3_BUCKET=your_s3_bucket
+```
 
-Running the Application
+Replace your_mysql_username, your_mysql_password, and your_jwt_secret with your MySQL credentials and a secure JWT secret.
 
-Start the server in production mode:
-cd backend
+Set Up MySQL Database:
+
+Ensure MySQL is running.
+Create the civictrack database:
+```sql
+CREATE DATABASE civictrack;
+```
+
+Run the migration script to create tables:
+```bash
+mysql -u your_mysql_username -p civictrack < migrations/20250802_init.sql
+```
+
+Enter your MySQL password when prompted.
+
+Start the Backend:
+```bash
 npm start
+```
 
+The backend will run on http://localhost:3000.
 
-The server will run on http://localhost:3000 (or the port specified in .env).
+### 3. Frontend Setup
 
+Navigate to Frontend Directory:
+```bash
+cd ../frontend
+```
 
-Start the server in development mode with hot-reloading:
-cd backend
-npm run dev
+Install Dependencies:
+```bash
+npm install
+```
 
+Configure Environment Variables:
 
-Verify the server is running by accessing:
+Create a .env file in /frontend with:
+```env
+REACT_APP_API_URL=http://localhost:3000/api
+```
 
-http://localhost:3000/api/categories (should return a list of categories).
+This points the frontend to the backend API.
 
+Start the Frontend:
+```bash
+npm start
+```
 
+The frontend will run on http://localhost:3000.
 
-Testing
-The project includes unit and integration tests in the tests directory. To run tests:
+### 4. Database Setup
 
-Ensure dependencies are installed.
-Run the test suite (add a test script to package.json if not present):cd backend
-npm test
+The 20250802_init.sql script creates the following tables:
+citizens, departments, officers, complaints, users, categories, reports, photos, status_logs, flags.
 
+It also inserts initial data for categories and departments.
+Verify the database setup:
+```bash
+mysql -u your_mysql_username -p
+USE civictrack;
+SHOW TABLES;
+```
 
-Note: Currently, no test runner (e.g., Jest) is configured. Add "test": "jest" to scripts and install Jest (npm install --save-dev jest) to enable testing.
+## Running the Application
 
+### Start the Backend:
 
+In /backend:
+```bash
+npm start
+```
 
-Contributing
-We welcome contributions to enhance CivicTrack! To contribute:
+Ensure http://localhost:3000/api is accessible (e.g., curl http://localhost:3000/api/auth/verify with a valid token).
 
-Fork the repository.
-Create a new branch: git checkout -b feature/your-feature.
-Make your changes and commit: git commit -m "Add your feature".
-Push to the branch: git push origin feature/your-feature.
-Open a pull request on GitHub.
+### Start the Frontend:
 
-Please adhere to the following guidelines:
+In /frontend:
+```bash
+npm start
+```
 
-Follow the existing code style (ES6, JSDoc comments).
-Write tests for new features.
-Update documentation as needed.
+Open http://localhost:3000 in a browser.
 
-License
-This project is currently unlicensed. Add a license (e.g., MIT) by creating a LICENSE file if you intend to open-source it. For now, all rights are reserved by the project owner.
-Contact
-For questions or support, please open an issue on the GitHub repository or contact the project maintainer:
+### Test the Application:
 
-Email: [devendra99651@gmail.com] 
-GitHub: d3va-12
+- Register: Go to /signup, create a user (e.g., email: test@example.com, password: password123).
+- Login: Go to /login, use the registered credentials.
+- Submit Report: Navigate to /report, submit a report with a photo (JPEG/PNG/GIF, <5MB).
+- View Reports: Go to /reports, search by latitude/longitude to view reports with photos.
+- Admin Access: Log in with an admin user (set is_admin = TRUE in the users table), then visit /admin.
+- Verify Photos: Check the photos table in MySQL:
+```sql
+SELECT photo_id, report_id, mimetype, filename, LENGTH(data) AS size FROM photos;
+```
+
+## API Endpoints
+
+- Auth:
+  - POST /api/auth/register: Register a new user ({ username, email, password, isAdmin }).
+  - POST /api/auth/login: Log in ({ email, password }).
+  - GET /api/auth/verify: Verify JWT token (requires Authorization: Bearer <token>).
+
+- Reports:
+  - POST /api/reports: Create a report with photos (multipart/form-data).
+  - GET /api/reports: Get reports within a radius.
+  - PUT /api/reports/:reportId/status: Update report status (admin only).
+
+- Photos:
+  - GET /api/photos/:photoId/data: Fetch photo data as binary.
+
+- Others: Endpoints for categories, citizens, departments, officers, complaints, and admin analytics (see respective routes).
+
+## Troubleshooting
+
+### Backend Errors:
+
+- Ensure MySQL is running and credentials in .env are correct.
+- Check logs in /backend/logs for errors.
+- Verify JWT token with:
+```bash
+curl -H "Authorization: Bearer <your_token>" http://localhost:3000/api/auth/verify
+```
+
+### Frontend Errors:
+
+- Clear Webpack cache:
+```bash
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+npm start
+```
+
+- Check browser console (F12) for errors.
+
+### Login Issues:
+
+- Ensure a user exists in the users table:
+```sql
+INSERT INTO users (username, email, password_hash, is_admin)
+VALUES ('testuser', 'test@example.com', '$2a$10$example_hash', FALSE);
+```
+
+- Use bcrypt to generate password_hash or register via /signup.
+
+### Photo Issues:
+
+- Verify photos are stored in the photos table.
+- Ensure /api/photos/:photoId/data returns binary data.
+
+## Development Notes
+
+- Photo Storage: Photos are stored as LONGBLOB in MySQL. Limit uploads to 5MB and 35 photos per report for performance.
+- Security: JWT tokens expire after 1 hour. Refresh logic can be added if needed.
+- Scalability: MySQL BLOB storage is suitable for small-to-medium applications. For larger scale, consider a dedicated file storage solution.
+- Future Improvements:
+  - Add MapView.js with react-leaflet for interactive maps.
+  - Implement password reset and email notifications.
+  - Add unit tests with Jest for frontend and Mocha for backend.
+
+## License
+
+MIT License. See LICENSE file for details (if applicable).
