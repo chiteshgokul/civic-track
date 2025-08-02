@@ -214,7 +214,3 @@ VALUES ('testuser', 'test@example.com', '$2a$10$example_hash', FALSE);
   - Add MapView.js with react-leaflet for interactive maps.
   - Implement password reset and email notifications.
   - Add unit tests with Jest for frontend and Mocha for backend.
-
-## License
-
-MIT License. See LICENSE file for details (if applicable).
