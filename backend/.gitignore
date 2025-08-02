@@ -1,0 +1,48 @@
+ # Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+error.log
+access.log
+
+# Build and distribution directories
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Test coverage reports
+coverage/
+
+# Database dumps or local data (if any)
+*.sqlite
+*.db
+*.bak
+
+# AWS credentials (if present)
+.aws/
+
+# Dependency lock files (optional, if you don't want to commit them)
+# package-lock.json
+# yarn.lock
