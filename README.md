@@ -1,5 +1,6 @@
 # civic-track
-CivicTrack Backend
+
+
 Welcome to the CivicTrack Backend, a robust Node.js/Express.js application designed to manage civic issue reporting, tracking, and administration. This backend supports a platform where users can report issues (e.g., potholes, lighting issues), citizens can lodge complaints, and administrators can monitor and resolve them. It integrates with a MySQL database and includes features like user authentication, geospatial filtering, and photo uploads.
 Table of Contents
 
