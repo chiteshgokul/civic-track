@@ -1,32 +1,26 @@
- const AWS = require('aws-sdk');
-const config = require('../config/environment');
+const { initDatabase } = require('../config/database');
 const logger = require('../utils/logger');
 
-const s3 = new AWS.S3({
-  accessKeyId: config.aws.accessKeyId,
-  secretAccessKey: config.aws.secretAccessKey,
-  region: config.aws.region
-});
-
 /**
- * Uploads a photo to S3
+ * Saves a photo to the MySQL database
  * @param {Object} file - File object from multer
- * @returns {Promise<string>} S3 URL
+ * @param {number} reportId - Associated report ID
+ * @returns {Promise<number>} Photo ID
  */
-const uploadPhoto = async (file) => {
+const savePhoto = async (file, reportId) => {
   try {
-    const params = {
-      Bucket: config.aws.s3Bucket,
-      Key: `photos/${Date.now()}_${file.originalname}`,
-      Body: file.buffer,
-      ContentType: file.mimetype
-    };
-    const { Location } = await s3.upload(params).promise();
-    return Location;
+    if (!file || !reportId) throw new Error('File or reportId missing');
+    const pool = await initDatabase();
+    const [result] = await pool.query(
+      'INSERT INTO photos (report_id, data, mimetype, filename) VALUES (?, ?, ?, ?)',
+      [reportId, file.buffer, file.mimetype, file.originalname]
+    );
+    logger.info(`Photo saved to database: ${file.originalname}`);
+    return result.insertId;
   } catch (error) {
-    logger.error('S3 upload error:', error);
+    logger.error('Database photo save error:', error);
     throw error;
   }
 };
 
-module.exports = { uploadPhoto };
+module.exports = { savePhoto };

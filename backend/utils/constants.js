@@ -5,15 +5,15 @@ const constants = {
   REPORT_STATUS: {
     REPORTED: 'Reported',
     IN_PROGRESS: 'In Progress',
-    RESOLVED: 'Resolved'
+    RESOLVED: 'Resolved',
   },
   COMPLAINT_STATUS: {
     PENDING: 'Pending',
     IN_PROGRESS: 'In Progress',
-    RESOLVED: 'Resolved'
+    RESOLVED: 'Resolved',
   },
   MAX_PHOTOS: 35,
-  DEFAULT_RADIUS: 5000
+  DEFAULT_RADIUS: 5000,
 };
 
 module.exports = constants;

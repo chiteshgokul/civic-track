@@ -5,7 +5,7 @@ const { validateReport, validateReportQuery } = require('../middleware/validatio
 const multer = require('multer');
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { files: 35 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { files: 35, fileSize: 5 * 1024 * 1024 } });
 
 router.post('/', authenticate, upload.array('photos', 35), validateReport, createReport);
 router.get('/', validateReportQuery, getReports);

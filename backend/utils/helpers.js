@@ -1,4 +1,4 @@
- /**
+/**
  * Sanitizes input to prevent XSS
  * @param {string} input - Input string
  * @returns {string} Sanitized string

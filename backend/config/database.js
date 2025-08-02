@@ -1,8 +1,8 @@
- const mysql = require('mysql2/promise');
+const mysql = require('mysql2/promise');
 const logger = require('../utils/logger');
 
 /**
- * Initializes MySQL database connection
+ * Initializes MySQL database connection pool
  * @returns {Promise<mysql.Pool>} Database connection pool
  */
 const initDatabase = async () => {
@@ -14,7 +14,7 @@ const initDatabase = async () => {
       database: process.env.DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
-      queueLimit: 0
+      queueLimit: 0,
     });
     logger.info('Database connection established');
     return pool;

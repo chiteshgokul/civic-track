@@ -53,7 +53,7 @@ const getComplaints = async (req, res) => {
     const { status, dept_id } = req.query;
     const pool = await initDatabase();
     let query = `
-      SELECT c.complaint_id, c.description, c.status, c.created_at, 
+      SELECT c.complaint_id, c.description, c.status, c.created_at,
              ci.name AS citizen_name, d.dept_name
       FROM complaints c
       JOIN citizens ci ON c.citizen_id = ci.citizen_id
@@ -77,4 +77,16 @@ const getComplaints = async (req, res) => {
   }
 };
 
-module.exports = { createComplaint, updateComplaintStatus, getComplaints };
+const getUserComplaints = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const pool = await initDatabase();
+    const [complaints] = await pool.query('SELECT * FROM complaints WHERE citizen_id = ?', [userId]);
+    res.json(complaints);
+  } catch (error) {
+    logger.error('Get user complaints error:', error);
+    res.status(500).json({ error: 'Failed to fetch complaints' });
+  }
+};
+
+module.exports = { createComplaint, updateComplaintStatus, getComplaints, getUserComplaints };

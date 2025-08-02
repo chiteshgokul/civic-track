@@ -1,4 +1,4 @@
- const { initDatabase } = require('../config/database');
+const { initDatabase } = require('../config/database');
 const logger = require('../utils/logger');
 
 /**
@@ -26,7 +26,7 @@ const getAnalytics = async () => {
       totalReports: totalReports[0].count,
       totalComplaints: totalComplaints[0].count,
       categoryStats,
-      deptStats
+      deptStats,
     };
   } catch (error) {
     logger.error('Analytics error:', error);

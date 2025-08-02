@@ -1,4 +1,4 @@
- const express = require('express');
+const express = require('express');
 const { getCategories } = require('../controllers/categoryController');
 const router = express.Router();
 

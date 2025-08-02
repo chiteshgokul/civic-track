@@ -1,7 +1,7 @@
 const { body, query, validationResult } = require('express-validator');
 
 /**
- * Validates report creation
+ * Validates report creation (POST)
  */
 const validateReport = [
   body('title').trim().notEmpty().withMessage('Title is required'),
@@ -10,16 +10,28 @@ const validateReport = [
   body('latitude').isFloat({ min: -90, max: 90 }).withMessage('Valid latitude required'),
   body('longitude').isFloat({ min: -180, max: 180 }).withMessage('Valid longitude required'),
   (req, res, next) => {
+    // File validation
+    const files = req.files || [];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    for (const file of files) {
+      if (file.size > maxSize) {
+        return res.status(400).json({ error: 'Each photo must be under 5MB' });
+      }
+      if (!allowedTypes.includes(file.mimetype)) {
+        return res.status(400).json({ error: 'Only JPEG, PNG, and GIF images are allowed' });
+      }
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
 ];
 
 /**
- * Validates report query
+ * Validates report query (GET)
  */
 const validateReportQuery = [
   query('latitude').isFloat({ min: -90, max: 90 }).withMessage('Valid latitude required'),
@@ -33,7 +45,38 @@ const validateReportQuery = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
+];
+
+/**
+ * Validates user registration
+ */
+const validateRegister = [
+  body('username').trim().notEmpty().withMessage('Username is required'),
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+];
+
+/**
+ * Validates user login
+ */
+const validateLogin = [
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
 ];
 
 /**
@@ -50,7 +93,7 @@ const validateCitizen = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
 ];
 
 /**
@@ -65,7 +108,7 @@ const validateDepartment = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
 ];
 
 /**
@@ -83,7 +126,7 @@ const validateOfficer = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
 ];
 
 /**
@@ -99,14 +142,16 @@ const validateComplaint = [
       return res.status(400).json({ errors: errors.array() });
     }
     next();
-  }
+  },
 ];
 
 module.exports = {
   validateReport,
   validateReportQuery,
+  validateRegister,
+  validateLogin,
   validateCitizen,
   validateDepartment,
   validateOfficer,
-  validateComplaint
+  validateComplaint,
 };

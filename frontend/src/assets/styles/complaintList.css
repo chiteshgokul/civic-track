@@ -1,0 +1,80 @@
+ .complaint-list-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.complaint-list-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  flex: 1 1 150px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.complaint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.complaint-item {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.complaint-item select {
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 600px) {
+  .complaint-list-container {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .filter-form {
+    flex-direction: column;
+  }
+}

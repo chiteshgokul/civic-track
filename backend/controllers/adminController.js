@@ -66,7 +66,7 @@ const getAnalytics = async (req, res) => {
       totalReports: totalReports[0].count,
       totalComplaints: totalComplaints[0].count,
       categoryStats,
-      deptStats
+      deptStats,
     });
   } catch (error) {
     logger.error('Get analytics error:', error);

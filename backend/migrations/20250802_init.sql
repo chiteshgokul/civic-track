@@ -1,8 +1,6 @@
- -- Create Database
 CREATE DATABASE IF NOT EXISTS civictrack;
 USE civictrack;
 
--- Citizens Table
 CREATE TABLE citizens (
     citizen_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -12,14 +10,12 @@ CREATE TABLE citizens (
     aadhar_no VARCHAR(12) UNIQUE
 ) ENGINE=InnoDB;
 
--- Departments Table
 CREATE TABLE departments (
     dept_id INT AUTO_INCREMENT PRIMARY KEY,
     dept_name VARCHAR(100) NOT NULL,
     contact_no VARCHAR(15)
 ) ENGINE=InnoDB;
 
--- Officers Table
 CREATE TABLE officers (
     officer_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -30,7 +26,6 @@ CREATE TABLE officers (
     FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
 ) ENGINE=InnoDB;
 
--- Complaints Table
 CREATE TABLE complaints (
     complaint_id INT AUTO_INCREMENT PRIMARY KEY,
     citizen_id INT,
@@ -42,7 +37,6 @@ CREATE TABLE complaints (
     FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
 ) ENGINE=InnoDB;
 
--- Users Table
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -53,13 +47,11 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- Categories Table
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
 ) ENGINE=InnoDB;
 
--- Reports Table
 CREATE TABLE reports (
     report_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -75,16 +67,16 @@ CREATE TABLE reports (
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- Photos Table
 CREATE TABLE photos (
     photo_id INT AUTO_INCREMENT PRIMARY KEY,
     report_id INT,
-    url VARCHAR(255) NOT NULL,
+    data LONGBLOB NOT NULL,
+    mimetype VARCHAR(50) NOT NULL,
+    filename VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (report_id) REFERENCES reports(report_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Status Logs Table
 CREATE TABLE status_logs (
     log_id INT AUTO_INCREMENT PRIMARY KEY,
     report_id INT,
@@ -93,7 +85,6 @@ CREATE TABLE status_logs (
     FOREIGN KEY (report_id) REFERENCES reports(report_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Flags Table
 CREATE TABLE flags (
     flag_id INT AUTO_INCREMENT PRIMARY KEY,
     report_id INT,
@@ -104,16 +95,13 @@ CREATE TABLE flags (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
--- Indexes for Performance
 CREATE SPATIAL INDEX idx_reports_location ON reports(location);
 CREATE INDEX idx_reports_status ON reports(status);
 CREATE INDEX idx_reports_category_id ON reports(category_id);
 
--- Insert Default Categories
 INSERT INTO categories (name) VALUES
 ('Roads'), ('Lighting'), ('Water Supply'), ('Cleanliness'), ('Public Safety'), ('Obstructions');
 
--- Insert Sample Departments
 INSERT INTO departments (dept_name, contact_no) VALUES
 ('Roads Department', '1234567890'),
 ('Water Department', '0987654321'),

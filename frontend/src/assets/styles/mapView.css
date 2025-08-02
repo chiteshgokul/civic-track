@@ -1,0 +1,30 @@
+ .map-view-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.map-view-container h2 {
+  margin-bottom: 20px;
+}
+
+.map-placeholder {
+  height: 400px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 600px) {
+  .map-view-container {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .map-placeholder {
+    height: 300px;
+  }
+}

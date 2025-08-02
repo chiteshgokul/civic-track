@@ -1,0 +1,28 @@
+/* Import global styles from main.css */
+@import url('./assets/styles/main.css');
+
+/* Root-level styles */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the app takes full height */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Optional: Add global styles not covered in main.css */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for interactive elements */
+a, button {
+  transition: all 0.3s ease;
+} 
